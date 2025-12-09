@@ -1,0 +1,187 @@
+:root {
+  --gap: 0.5rem;
+  --panel-width: 320px;
+  --bg: #f5f5f5;
+  --box-bg: #fff;
+  --canvas-bg: #e1e1e1;
+  --font: system-ui, sans-serif;
+}
+
+/* page layout */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  font-family: var(--font);
+}
+
+/* header */
+.header {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  background: var(--box-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.header h1 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.75rem;
+}
+.header p {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+/* main two-column layout area */
+.main {
+  flex: 1;
+  display: flex;
+  padding: var(--gap);
+  box-sizing: border-box;
+  gap: var(--gap);
+  overflow: hidden;
+}
+.panel {
+  width: var(--panel-width);
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  overflow-y: auto;
+}
+
+/* content area */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.canvas-box {
+  flex: 1;
+  background: var(--canvas-bg);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+#threeCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* panel boxes */
+.box {
+  background: var(--box-bg);
+  border-radius: 4px;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.box h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.75rem 0;
+  color: #333;
+}
+
+/* toolbar */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: var(--font);
+  transition: background 0.2s;
+}
+.button:hover:not(:disabled) {
+  background: #0056b3;
+}
+.button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* form fields */
+.field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.field label {
+  min-width: 120px;
+  font-size: 0.9rem;
+  color: #555;
+}
+.field input[type="range"] {
+  flex: 1;
+}
+.field .out {
+  min-width: 40px;
+  text-align: right;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* checkboxes */
+.checks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.checks label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* video container */
+.video-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 75%; /* 4:3 aspect ratio */
+  background: #000;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.video-container video,
+.video-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* status text */
+#status {
+  margin: 0.5rem 0 0 0;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #666;
+  min-height: 1.5rem;
+}
+

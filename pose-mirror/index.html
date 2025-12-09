@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pose Mirror - Real-time Body Tracking</title>
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+  </head>
+
+  <body>
+    <header class="header">
+      <h1>Pose Mirror: Real-time Body Tracking</h1>
+      <p>Using webcam to mirror body movements in 3D</p>
+    </header>
+
+    <div class="main">
+      <aside class="panel">
+        <section class="box">
+          <h2 style="margin-top: 0">Camera Controls</h2>
+          
+          <div class="toolbar">
+            <button id="startCameraBtn" class="button">Start Camera</button>
+            <button id="stopCameraBtn" class="button" disabled>Stop Camera</button>
+          </div>
+
+          <p id="status">Initializing...</p>
+        </section>
+
+        <section class="box">
+          <h2 style="margin-top: 0">Model Settings</h2>
+
+          <div class="field">
+            <label for="skeletonScaleSlider">Scale</label>
+            <input
+              id="skeletonScaleSlider"
+              type="range"
+              min="0.5"
+              max="3.0"
+              step="0.1"
+              value="1.0"
+            />
+            <output id="skeletonScaleVal" class="out">1.0</output>
+          </div>
+
+          <div class="field">
+            <label for="boneThicknessSlider">Bone Thickness</label>
+            <input
+              id="boneThicknessSlider"
+              type="range"
+              min="0.01"
+              max="0.1"
+              step="0.01"
+              value="0.05"
+            />
+            <output id="boneThicknessVal" class="out">0.05</output>
+          </div>
+
+          <div class="checks">
+            <label>
+              <input id="showJointsCheckbox" type="checkbox" checked />
+              Show Joints
+            </label>
+            <label>
+              <input id="showBonesCheckbox" type="checkbox" checked />
+              Show Bones
+            </label>
+          </div>
+        </section>
+
+        <section class="box">
+          <h2 style="margin-top: 0">Camera View</h2>
+          
+          <div class="video-container">
+            <video id="webcam" autoplay playsinline style="display: none;"></video>
+            <canvas id="webcamCanvas"></canvas>
+          </div>
+        </section>
+      </aside>
+
+      <!-- right: three.js canvas -->
+      <section class="content">
+        <div class="canvas-box">
+          <canvas id="threeCanvas"></canvas>
+        </div>
+      </section>
+    </div>
+
+    <!-- External libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r150/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1640029074/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6.1629159500/control_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1635989137/pose.js"></script>
+    
+    <!-- Our code -->
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
+
