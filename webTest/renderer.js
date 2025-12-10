@@ -18,7 +18,16 @@ import {
   DrawingUtils
 } from "https://cdn.skypack.dev/@mediapipe/tasks-vision@0.10.0";
 
+import { PoseExporter } from "./poseExporter.js";
+
 const demosSection = document.getElementById("demos");
+
+// Initialize pose exporter
+const poseExporter = new PoseExporter({
+  enabled: true,
+  format: 'normalized'
+  // Optionally add WebSocket URL: websocketUrl: 'ws://localhost:8080'
+});
 
 let poseLandmarker = undefined;
 let runningMode = "IMAGE";
@@ -171,16 +180,22 @@ async function predictWebcam() {
   let startTimeMs = performance.now();
   if (lastVideoTime !== video.currentTime) {
     lastVideoTime = video.currentTime;
-    poseLandmarker.detectForVideo(video, startTimeMs, (result) => {
-      canvasCtx.save();
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-      for (const landmark of result.landmarks) {
-        drawingUtils.drawLandmarks(landmark, {
-          radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
-        });
-        drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
-      }
-      canvasCtx.restore();
+    const result = await poseLandmarker.detectForVideo(video, startTimeMs);
+    
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    for (const landmark of result.landmarks) {
+      drawingUtils.drawLandmarks(landmark, {
+        radius: (data) => DrawingUtils.lerp(data.from.z, -0.15, 0.1, 5, 1)
+      });
+      drawingUtils.drawConnectors(landmark, PoseLandmarker.POSE_CONNECTIONS);
+    }
+    canvasCtx.restore();
+    
+    // Export pose data to other applications
+    poseExporter.exportPose(result, startTimeMs, {
+      width: canvasElement.width,
+      height: canvasElement.height
     });
   }
 

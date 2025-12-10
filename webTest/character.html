@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Character Pose Mirror</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    
+    #info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      z-index: 100;
+      max-width: 300px;
+    }
+    
+    #info h2 {
+      margin: 0 0 10px 0;
+      font-size: 18px;
+    }
+    
+    #status {
+      margin-top: 10px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+    
+    .connected {
+      background-color: #4CAF50;
+      animation: pulse 1s infinite;
+    }
+    
+    .disconnected {
+      background-color: #f44336;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    #controls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px 25px;
+      border-radius: 8px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+    }
+    
+    button.active {
+      background: #4CAF50;
+    }
+    
+    select {
+      background: #2a2a3e;
+      color: white;
+      border: 1px solid #667eea;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+    }
+    
+    #model-selector {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 15px;
+      border-radius: 8px;
+      color: white;
+      z-index: 100;
+    }
+    
+    #model-selector label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 24px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 30px 50px;
+      border-radius: 10px;
+      z-index: 200;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="info">
+    <h2>🎭 3D Character Pose Mirror</h2>
+    <p>Your movements control the 3D character in real-time!</p>
+    <div id="status">
+      <span class="status-indicator disconnected" id="indicator"></span>
+      <span id="status-text">Waiting for pose data...</span>
+    </div>
+    <div style="margin-top: 10px; font-size: 12px;">
+      <div>FPS: <span id="fps">0</span></div>
+      <div>Poses: <span id="pose-count">0</span></div>
+      <div>Model: <span id="current-model">Humanoid</span></div>
+    </div>
+  </div>
+  
+  <div id="model-selector">
+    <label for="model-choice">Choose Character:</label>
+    <select id="model-choice">
+      <option value="humanoid">Humanoid (Simple)</option>
+      <option value="robot">Robot Character</option>
+      <option value="stickman">Stick Figure</option>
+      <option value="custom">Custom GLTF/GLB</option>
+    </select>
+    <div style="margin-top: 10px;">
+      <input type="text" id="model-path" placeholder="gorilla.glb" 
+             style="width: 100%; padding: 5px; background: #2a2a3e; color: white; border: 1px solid #667eea; border-radius: 3px; font-size: 12px;">
+      <button id="load-model" style="width: 100%; margin-top: 5px; padding: 5px; font-size: 12px;">Load Model</button>
+    </div>
+    <div style="margin-top: 5px; font-size: 11px; opacity: 0.7;">
+      Enter filename (e.g., gorilla.glb)<br>
+      or full path to .gltf/.glb file
+    </div>
+  </div>
+  
+  <div id="loading" class="loading hidden">
+    Loading 3D Model...
+  </div>
+  
+  <div id="controls">
+    <button id="reset-camera">Reset Camera</button>
+    <button id="toggle-skeleton">Show Skeleton</button>
+    <button id="toggle-grid">Toggle Grid</button>
+    <button id="toggle-wireframe">Wireframe</button>
+  </div>
+  
+  <div id="canvas-container"></div>
+  
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module" src="characterViewer.js"></script>
+</body>
+</html>
